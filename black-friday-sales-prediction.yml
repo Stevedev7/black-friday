@@ -1,0 +1,107 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: black-friday-sales-prediction-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-11-23T05:19:03.973882',
+    pipelines.kubeflow.org/pipeline_spec: '{"name": "Black Friday Sales Prediction"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0}
+spec:
+  entrypoint: black-friday-sales-prediction
+  templates:
+  - name: black-friday-sales-prediction
+    dag:
+      tasks:
+      - {name: download-data, template: download-data}
+      - name: process-training-data
+        template: process-training-data
+        dependencies: [download-data]
+        arguments:
+          artifacts:
+          - {name: download-data-Dataset, from: '{{tasks.download-data.outputs.artifacts.download-data-Dataset}}'}
+          - {name: download-data-Sample, from: '{{tasks.download-data.outputs.artifacts.download-data-Sample}}'}
+      - name: show-results
+        template: show-results
+        dependencies: [process-training-data]
+        arguments:
+          parameters:
+          - {name: process-training-data-Data, value: '{{tasks.process-training-data.outputs.parameters.process-training-data-Data}}'}
+  - name: download-data
+    container:
+      args: []
+      command: [python, index.py, --sample, /tmp/outputs/Sample/data, --dataset, /tmp/outputs/Dataset/data]
+      image: stevedev7/black_friday:copy_data_v2
+    outputs:
+      artifacts:
+      - {name: download-data-Dataset, path: /tmp/outputs/Dataset/data}
+      - {name: download-data-Sample, path: /tmp/outputs/Sample/data}
+    metadata:
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Saves
+          the data in the blob storage", "implementation": {"container": {"command":
+          ["python", "index.py", "--sample", {"outputPath": "Sample"}, "--dataset",
+          {"outputPath": "Dataset"}], "image": "stevedev7/black_friday:copy_data_v2"}},
+          "name": "Download data", "outputs": [{"description": "Path where Training
+          dataset is stored", "name": "Dataset", "type": "LocalPath"}, {"description":
+          "Path where Testing dataset is stored", "name": "Sample", "type": "LocalPath"}]}',
+        pipelines.kubeflow.org/component_ref: '{"digest": "2f241f4c59632a610fde4ab29d696950cdf5ad6a57c70e87e3d42823817925fc",
+          "url": "download_data/download_data.yml"}'}
+  - name: process-training-data
+    container:
+      args: []
+      command: [python, index.py, --data, /tmp/outputs/Data/data, --dataset, /tmp/inputs/Dataset/data,
+        --sample, /tmp/inputs/Sample/data]
+      image: stevedev7/black_friday:clean_data_v2
+    inputs:
+      artifacts:
+      - {name: download-data-Sample, path: /tmp/inputs/Dataset/data}
+      - {name: download-data-Dataset, path: /tmp/inputs/Sample/data}
+    outputs:
+      parameters:
+      - name: process-training-data-Data
+        valueFrom: {path: /tmp/outputs/Data/data}
+      artifacts:
+      - {name: process-training-data-Data, path: /tmp/outputs/Data/data}
+    metadata:
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Cleaning
+          datasets by removing unnecessary  columns and filling NaN values", "implementation":
+          {"container": {"command": ["python", "index.py", "--data", {"outputPath":
+          "Data"}, "--dataset", {"inputPath": "Dataset"}, "--sample", {"inputPath":
+          "Sample"}], "image": "stevedev7/black_friday:clean_data_v2"}}, "inputs":
+          [{"description": "Dataset", "name": "Dataset", "type": "LocalPath"}, {"description":
+          "Sample data", "name": "Sample", "type": "LocalPath"}], "name": "Process
+          Training data", "outputs": [{"description": "Cleaned data", "name": "Data",
+          "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "62a54805b7e071120f780840dfcd71ac0d011fc8359774a816b3cebd77c49248", "url":
+          "clean_data/clean_data.yml"}'}
+  - name: show-results
+    container:
+      args: [--var, '{{inputs.parameters.process-training-data-Data}}']
+      command:
+      - python3
+      - -u
+      - -c
+      - |
+        def show_results(var):
+            print(var)
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Show results', description='')
+        _parser.add_argument("--var", dest="var", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = show_results(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: process-training-data-Data}
+    metadata:
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"args": ["--var", {"inputValue": "var"}], "command": ["python3", "-u",
+          "-c", "def show_results(var):\n    print(var)\n\nimport argparse\n_parser
+          = argparse.ArgumentParser(prog=''Show results'', description='''')\n_parser.add_argument(\"--var\",
+          dest=\"var\", type=str, required=True, default=argparse.SUPPRESS)\n_parsed_args
+          = vars(_parser.parse_args())\n\n_outputs = show_results(**_parsed_args)\n"],
+          "image": "python:3.7"}}, "inputs": [{"name": "var"}], "name": "Show results"}',
+        pipelines.kubeflow.org/component_ref: '{}'}
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner

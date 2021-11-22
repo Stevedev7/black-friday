@@ -1,0 +1,23 @@
+name: Download data
+description: Saves the data in the blob storage
+
+outputs:
+        - {
+                name: Dataset, 
+                type: LocalPath, 
+                description: "Path where Training dataset is stored"
+        }
+        - {
+                name: Sample, 
+                type: LocalPath, 
+                description: "Path where Testing dataset is stored"
+        }
+
+implementation:
+        container: 
+                image: stevedev7/black_friday:copy_data_v2
+                command: [
+                        python, index.py,
+                        --sample, {outputPath: Sample},
+                        --dataset, {outputPath: Dataset},
+                ]
