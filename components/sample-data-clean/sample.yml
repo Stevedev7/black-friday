@@ -1,0 +1,25 @@
+name: Clean Sample Data
+inputs:
+  - {
+    name: Sample, type: LocalPath
+  }
+outputs: 
+  - {
+    name: Predictioninput, type: LocalPath
+  }
+
+implementation:
+  container: 
+    image: 
+      command: [
+        python,
+        index.py,
+        --sample,
+        {
+          inputPath: Sample
+        },
+        --predictioninput,
+        {
+          outputPath: Predictioninput
+        }
+      ]

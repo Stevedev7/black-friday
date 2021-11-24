@@ -1,0 +1,47 @@
+name: Feature scaling
+
+inputs:
+  - {
+    name: Data, type: LocalPath, description: "Path to processed dataset"
+  }
+outputs:
+  - {
+    name: XTrain, type: LocalPath
+  }
+  - {
+    name: YTrain, type: LocalPath
+  }
+  - {
+    name: XTest, type: LocalPath
+  }
+  - {
+    name: YTest, type: LocalPath
+  }
+
+implementation:
+  container:
+    image: stevedev7/black-friday:feature-engineering
+    command: [
+      python,
+      index.py,
+      --data,
+      {
+        inputPath: Data
+      },
+      --x-train,
+      {
+        outputPath: XTrain
+      },
+      --y-train,
+      {
+        outputPath: YTrain
+      },
+      --x-test,
+      {
+        outputPath: XTest
+      },
+      --y-test,
+      {
+        outputPath: YTest
+      },
+    ]

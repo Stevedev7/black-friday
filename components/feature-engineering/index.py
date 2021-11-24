@@ -1,7 +1,6 @@
-import numpy as np
-import pandas as pd
 from pathlib import Path
 from argparse import ArgumentParser
+from pandas import DataFrame, read_csv
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
@@ -18,7 +17,7 @@ Path(args.y_train).parent.mkdir(parents=True, exist_ok=True)
 Path(args.x_test).parent.mkdir(parents=True, exist_ok=True)
 Path(args.y_test).parent.mkdir(parents=True, exist_ok=True)
 
-df = pd.read_csv(args.data)
+df = read_csv(args.data)
 
 x = df.iloc[:, :-1].values
 y = df.iloc[:, -1].values
@@ -29,8 +28,8 @@ sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.transform(x_test)
 
-pd.DataFrame(x_train).to_csv(args.x_train)
-pd.DataFrame(y_train).to_csv(args.y_train)
-pd.DataFrame(x_test).to_csv(args.x_test)
-pd.DataFrame(y_test).to_csv(args.y_test)
+DataFrame(x_train).to_csv(args.x_train)
+DataFrame(y_train).to_csv(args.y_train)
+DataFrame(x_test).to_csv(args.x_test)
+DataFrame(y_test).to_csv(args.y_test)
 

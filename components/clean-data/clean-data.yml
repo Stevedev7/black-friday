@@ -12,7 +12,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/black-friday:clean_data
+    image: stevedev7/black-friday:clean-data
     command: [
       python,
       index.py
