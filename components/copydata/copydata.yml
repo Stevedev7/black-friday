@@ -11,11 +11,11 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/black-friday:copy_data_v3
+    image: stevedev7/black-friday:copy_data
     command: [
       python,
       index.py,
-      --data-set,
+      --dataset,
       {
         outputPath: Dataset
       },

@@ -2,18 +2,39 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: v-black-friday-v2-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-11-24T05:35:56.370486',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-11-24T07:16:49.085448',
     pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0}
 spec:
   entrypoint: v-black-friday-v2
   templates:
+  - name: clean-data
+    container:
+      args: []
+      command: [python, index.py --dataset, /tmp/inputs/Dataset/data, --data, /tmp/outputs/Data/data]
+      image: stevedev7/black-friday:clean_data
+    inputs:
+      artifacts:
+      - {name: copy-data-Dataset, path: /tmp/inputs/Dataset/data}
+    outputs:
+      artifacts:
+      - {name: clean-data-Data, path: /tmp/outputs/Data/data}
+    metadata:
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Fill
+          Nan values and generate dummy variables", "implementation": {"container":
+          {"command": ["python", "index.py --dataset", {"inputPath": "Dataset"}, "--data",
+          {"outputPath": "Data"}], "image": "stevedev7/black-friday:clean_data"}},
+          "inputs": [{"description": "Path to the dataset", "name": "Dataset", "type":
+          "LocalPath"}], "name": "Clean Data", "outputs": [{"description": "Path to
+          processed dataset", "name": "Data", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "4334113d56669ed6b049de9bc6d22afe770f9c1bfd890b56b8655cdd17074741", "url":
+          "components/clean-data/clean_data.yml"}'}
   - name: copy-data
     container:
       args: []
-      command: [python, index.py, --data-set, /tmp/outputs/Dataset/data, --sample,
+      command: [python, index.py, --dataset, /tmp/outputs/Dataset/data, --sample,
         /tmp/outputs/Sample/data]
-      image: stevedev7/black-friday:copy_data_v3
+      image: stevedev7/black-friday:copy_data
     outputs:
       artifacts:
       - {name: copy-data-Dataset, path: /tmp/outputs/Dataset/data}
@@ -21,16 +42,22 @@ spec:
     metadata:
       annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Copy
           datasets", "implementation": {"container": {"command": ["python", "index.py",
-          "--data-set", {"outputPath": "Dataset"}, "--sample", {"outputPath": "Sample"}],
-          "image": "stevedev7/black-friday:copy_data_v3"}}, "name": "Copy Data", "outputs":
+          "--dataset", {"outputPath": "Dataset"}, "--sample", {"outputPath": "Sample"}],
+          "image": "stevedev7/black-friday:copy_data"}}, "name": "Copy Data", "outputs":
           [{"description": "Path where the dataset is stored", "name": "Dataset",
           "type": "LocalPath"}, {"description": "Path where the sample data is stored",
           "name": "Sample", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "7520131043f47f84cf3483ff0cacb40b0c71877986457eb05145a7edf018e486", "url":
+          "5928a9aa63313e40229b33906f44d990c706df15fe5c561a78b1773e4f34939d", "url":
           "components/copydata/copydata.yml"}'}
   - name: v-black-friday-v2
     dag:
       tasks:
+      - name: clean-data
+        template: clean-data
+        dependencies: [copy-data]
+        arguments:
+          artifacts:
+          - {name: copy-data-Dataset, from: '{{tasks.copy-data.outputs.artifacts.copy-data-Dataset}}'}
       - {name: copy-data, template: copy-data}
   arguments:
     parameters: []
