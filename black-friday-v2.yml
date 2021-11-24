@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: v-black-friday-v2-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-11-24T05:35:56.370486',
+    pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0}
+spec:
+  entrypoint: v-black-friday-v2
+  templates:
+  - name: copy-data
+    container:
+      args: []
+      command: [python, index.py, --data-set, /tmp/outputs/Dataset/data, --sample,
+        /tmp/outputs/Sample/data]
+      image: stevedev7/black-friday:copy_data_v3
+    outputs:
+      artifacts:
+      - {name: copy-data-Dataset, path: /tmp/outputs/Dataset/data}
+      - {name: copy-data-Sample, path: /tmp/outputs/Sample/data}
+    metadata:
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Copy
+          datasets", "implementation": {"container": {"command": ["python", "index.py",
+          "--data-set", {"outputPath": "Dataset"}, "--sample", {"outputPath": "Sample"}],
+          "image": "stevedev7/black-friday:copy_data_v3"}}, "name": "Copy Data", "outputs":
+          [{"description": "Path where the dataset is stored", "name": "Dataset",
+          "type": "LocalPath"}, {"description": "Path where the sample data is stored",
+          "name": "Sample", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "7520131043f47f84cf3483ff0cacb40b0c71877986457eb05145a7edf018e486", "url":
+          "components/copydata/copydata.yml"}'}
+  - name: v-black-friday-v2
+    dag:
+      tasks:
+      - {name: copy-data, template: copy-data}
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
