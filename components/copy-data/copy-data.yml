@@ -1,20 +1,35 @@
 name: Copy Data
 description: Copy datasets
+inputs: 
+  - {
+    name: Output data uri, type: GCSPath
+  }
+  - {
+    name: Output sample uri, type: GCSPath
+  }
 
 outputs: 
   - {
-    name: Dataset, type: LocalPath, description: "Path where the dataset is stored"
+    name: Dataset, type: GCSPath, description: "Path where the dataset is stored"
   }
   - {
-    name: Sample, type: LocalPath, description: "Path where the sample data is stored"
+    name: Sample, type: GCSPath, description: "Path where the sample data is stored"
   }
 
 implementation:
   container:
-    image: stevedev7/black-friday:copy-data
+    image: stevedev7/black-friday:copy-data-01
     command: [
       python,
       index.py,
+      --output-data-uri,
+      {
+        inputPath: Output data uri
+      },
+      --output-sample-uri,
+      {
+        inputPath: Output sample uri
+      },
       --dataset,
       {
         outputPath: Dataset
