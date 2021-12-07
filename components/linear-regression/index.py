@@ -2,7 +2,7 @@ from pathlib import Path
 from pandas import read_csv
 from argparse import ArgumentParser
 from sklearn.linear_model import LinearRegression
-from pickle import dump
+from pickle import dump, load
 
 parser = ArgumentParser()
 parser.add_argument('--x-train', type=str)

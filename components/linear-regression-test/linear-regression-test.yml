@@ -1,0 +1,33 @@
+name: Linear Regression Test
+
+inputs:
+  - {
+    name: X Test, type: LocalPath
+  }
+  - {
+    name: Y Test, type: LocalPath
+  }
+  - {
+    name: Linear Regression Model, type: LocalPath
+  }
+
+outputs:
+  - {
+    name: Linear Regression Metrics, type: LocalPath
+  }
+
+implementation:
+  container:
+    image: stevedev7/demo2-master:linear-regression-test
+    command: [
+      python,
+      index.py,
+      --x-test,
+      {inputPath: X Test},
+      --y-test,
+      {inputPath: Y Test},
+      --model,
+      {inputPath: Linear Regression Model},
+      --accuracy,
+      {outputPath: Linear Regression Metrics}
+    ]

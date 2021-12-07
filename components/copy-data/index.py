@@ -15,4 +15,3 @@ Path(args.dataset).parent.mkdir(parents=True, exist_ok=True)
 Path(args.sample).parent.mkdir(parents=True, exist_ok=True)
 
 dataset.to_csv(args.dataset, index=False)
-sample.to_csv(args.sample, index=False)
