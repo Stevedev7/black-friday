@@ -17,10 +17,13 @@ outputs:
   - {
     name: Y Test, type: LocalPath
   }
+  - {
+    name: Standard Scaler Object, type: LocalPath
+  }
 
 implementation:
   container:
-    image: stevedev7/demo2-master:feature-scale
+    image: stevedev7/demo2-master:feature-scale-v2
     command: [
       python,
       index.py,
@@ -44,4 +47,8 @@ implementation:
       {
         outputPath: Y Test
       },
+      --standard-scaler,
+      {
+        outputPath: Standard Scaler Object
+      }
     ]

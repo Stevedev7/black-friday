@@ -1,15 +1,15 @@
 import numpy as np
 import pandas as pd
+from pickle import dump
 from pathlib import Path
 from argparse import ArgumentParser
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-
 parser = ArgumentParser()
 parser.add_argument('--dataset', type=str)
 parser.add_argument('--data', type=str)
-
+parser.add_argument('--column-transformer', type=str)
 args = parser.parse_args()
 Path(args.data).parent.mkdir(parents=True, exist_ok=True)
 
@@ -38,3 +38,8 @@ data = pd.concat([x,y], axis=1)
 
 # Write the data to a csv file
 data.to_csv(path_or_buf=args.data, index=False)
+
+# Write the column transformer object into a file
+Path().parent.mkdir(parents=True, exist_ok=True)
+with open(args.column_transformer, 'wb') as output_file:
+    dump(ct, output_file)

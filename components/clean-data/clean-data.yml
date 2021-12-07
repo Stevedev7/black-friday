@@ -9,10 +9,12 @@ outputs:
   - {
     name: Data, type: LocalPath, description: "Path to processed dataset"
   }
-
+  - {
+    name: Column Transformer Object, type: LocalPath
+  }
 implementation:
   container:
-    image: stevedev7/demo2-master:clean-data
+    image: stevedev7/demo2-master:clean-data-v2
     command: [
       python,
       index.py,
@@ -23,5 +25,9 @@ implementation:
       --data,
       {
         outputPath: Data
+      },
+      --column-transformer,
+      {
+        outputPath: Column Transformer Object
       }
     ]

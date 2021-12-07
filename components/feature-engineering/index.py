@@ -1,3 +1,4 @@
+from pickle import dump
 from pathlib import Path
 from argparse import ArgumentParser
 from pandas import DataFrame, read_csv
@@ -10,12 +11,14 @@ parser.add_argument('--x-test', type=str)
 parser.add_argument('--y-train', type=str)
 parser.add_argument('--y-test', type=str)
 parser.add_argument('--data', type=str)
+parser.add_argument('--standard-scaler', type=str)
 
 args = parser.parse_args()
 Path(args.x_train).parent.mkdir(parents=True, exist_ok=True)
 Path(args.y_train).parent.mkdir(parents=True, exist_ok=True)
 Path(args.x_test).parent.mkdir(parents=True, exist_ok=True)
 Path(args.y_test).parent.mkdir(parents=True, exist_ok=True)
+Path(args.standard_scaler).parent.mkdir(parents=True, exist_ok=True)
 
 df = read_csv(args.data)
 
@@ -33,3 +36,5 @@ DataFrame(y_train).to_csv(args.y_train)
 DataFrame(x_test).to_csv(args.x_test)
 DataFrame(y_test).to_csv(args.y_test)
 
+with open(args.standard_scaler, 'wb') as output_file:
+    dump(sc, output_file)
