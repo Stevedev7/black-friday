@@ -1,27 +1,19 @@
 name: Clean Data
 description: Fill Nan values and generate dummy variables
 
-inputs:
-  - {
-    name: Dataset, type: LocalPath, description: "Path to the dataset"
-  }
 outputs:
   - {
-    name: Data, type: LocalPath, description: "Path to processed dataset"
+    name: Clean Data, type: LocalPath, description: "Path to processed dataset"
   }
 
 implementation:
   container:
-    image: stevedev7/black-friday:clean-data
+    image: stevedev7/black-friday:clean-data-04
     command: [
       python,
-      index.py
-      --dataset,
+      index.py,
+      --clean-data,
       {
-        inputPath: Dataset
-      },
-      --data,
-      {
-        outputPath: Data
+        outputPath: Clean Data
       }
     ]

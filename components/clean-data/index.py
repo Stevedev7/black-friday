@@ -6,14 +6,12 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-parser = ArgumentParser()
-parser.add_argument('--dataset', type=str)
-parser.add_argument('--data', type=str)
+# Import dataset from GCS
+import gcsfs
 
-args = parser.parse_args()
-Path(args.data).parent.mkdir(parents=True, exist_ok=True)
-
-df = pd.read_csv(args.dataset)
+fs = gcsfs.GCSFileSystem(project='niveustraining')
+with fs.open('gs://black-friday-demo-bucket/black-friday/train/train.csv') as f:
+    df = pd.read_csv(f)
 
 # Split the data into independent and dependent variables and remove unnecessary columns
 x = df.iloc[:, 2:-2].values
@@ -36,5 +34,12 @@ x = pd.DataFrame(x)
 y = pd.DataFrame(y)
 data = pd.concat([x,y], axis=1)
 
+# Parse the output params and create a folder if doesn't exist to store the cleaned dataset 
+parser = ArgumentParser()
+parser.add_argument('--clean-data', type=str)
+
+args = parser.parse_args()
+Path(args.clean_data).parent.mkdir(parents=True, exist_ok=True)
+
 # Write the data to a csv file
-data.to_csv(path_or_buf=args.data, index=False)
+data.to_csv(path_or_buf=args.clean_data, index=False)
