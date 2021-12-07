@@ -14,7 +14,7 @@ outputs:
   }
 implementation:
   container:
-    image: stevedev7/demo2-master:clean-data-v2
+    image: stevedev7/demo2-master:clean-data-v3
     command: [
       python,
       index.py,

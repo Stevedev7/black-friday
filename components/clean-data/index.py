@@ -40,6 +40,6 @@ data = pd.concat([x,y], axis=1)
 data.to_csv(path_or_buf=args.data, index=False)
 
 # Write the column transformer object into a file
-Path().parent.mkdir(parents=True, exist_ok=True)
+Path(args.column_transformer).parent.mkdir(parents=True, exist_ok=True)
 with open(args.column_transformer, 'wb') as output_file:
     dump(ct, output_file)

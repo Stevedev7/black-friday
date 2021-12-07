@@ -1,0 +1,187 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: v-black-friday-v2-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-07T21:28:56.149387',
+    pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
+spec:
+  entrypoint: v-black-friday-v2
+  templates:
+  - name: clean-data
+    container:
+      args: []
+      command: [python, index.py, --dataset, /tmp/inputs/Dataset/data, --data, /tmp/outputs/Data/data,
+        --column-transformer, /tmp/outputs/Column_Transformer_Object/data]
+      image: stevedev7/demo2-master:clean-data-v3
+    inputs:
+      artifacts:
+      - {name: copy-data-Dataset, path: /tmp/inputs/Dataset/data}
+    outputs:
+      artifacts:
+      - {name: clean-data-Column-Transformer-Object, path: /tmp/outputs/Column_Transformer_Object/data}
+      - {name: clean-data-Data, path: /tmp/outputs/Data/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Fill
+          Nan values and generate dummy variables", "implementation": {"container":
+          {"command": ["python", "index.py", "--dataset", {"inputPath": "Dataset"},
+          "--data", {"outputPath": "Data"}, "--column-transformer", {"outputPath":
+          "Column Transformer Object"}], "image": "stevedev7/demo2-master:clean-data-v3"}},
+          "inputs": [{"description": "Path to the dataset", "name": "Dataset", "type":
+          "LocalPath"}], "name": "Clean Data", "outputs": [{"description": "Path to
+          processed dataset", "name": "Data", "type": "LocalPath"}, {"name": "Column
+          Transformer Object", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "e9ecbb7f56c08b0b5c9b78fd7080cda6d82a4912c465344f03fce6951cb167ff", "url":
+          "components/clean-data/clean-data.yml"}'}
+  - name: copy-data
+    container:
+      args: []
+      command: [python, index.py, --dataset, /tmp/outputs/Dataset/data, --sample,
+        /tmp/outputs/Sample/data]
+      image: stevedev7/demo2-master:copy-data
+    outputs:
+      artifacts:
+      - {name: copy-data-Dataset, path: /tmp/outputs/Dataset/data}
+      - {name: copy-data-Sample, path: /tmp/outputs/Sample/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Copy
+          datasets", "implementation": {"container": {"command": ["python", "index.py",
+          "--dataset", {"outputPath": "Dataset"}, "--sample", {"outputPath": "Sample"}],
+          "image": "stevedev7/demo2-master:copy-data"}}, "name": "Copy Data", "outputs":
+          [{"description": "Path where the dataset is stored", "name": "Dataset",
+          "type": "LocalPath"}, {"description": "Path where the sample data is stored",
+          "name": "Sample", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "8a2f504bf6b21b29bc24c75a72bb5e312233e93f58b1c60a5debb65f4f609bbf", "url":
+          "components/copy-data/copy-data.yml"}'}
+  - name: feature-scaling
+    container:
+      args: []
+      command: [python, index.py, --data, /tmp/inputs/Data/data, --x-train, /tmp/outputs/X_Train/data,
+        --y-train, /tmp/outputs/Y_Train/data, --x-test, /tmp/outputs/X_Test/data,
+        --y-test, /tmp/outputs/Y_Test/data, --standard-scaler, /tmp/outputs/Standard_Scaler_Object/data]
+      image: stevedev7/demo2-master:feature-scale-v2
+    inputs:
+      artifacts:
+      - {name: clean-data-Data, path: /tmp/inputs/Data/data}
+    outputs:
+      artifacts:
+      - {name: feature-scaling-Standard-Scaler-Object, path: /tmp/outputs/Standard_Scaler_Object/data}
+      - {name: feature-scaling-X-Test, path: /tmp/outputs/X_Test/data}
+      - {name: feature-scaling-X-Train, path: /tmp/outputs/X_Train/data}
+      - {name: feature-scaling-Y-Test, path: /tmp/outputs/Y_Test/data}
+      - {name: feature-scaling-Y-Train, path: /tmp/outputs/Y_Train/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"command": ["python", "index.py", "--data", {"inputPath": "Data"}, "--x-train",
+          {"outputPath": "X Train"}, "--y-train", {"outputPath": "Y Train"}, "--x-test",
+          {"outputPath": "X Test"}, "--y-test", {"outputPath": "Y Test"}, "--standard-scaler",
+          {"outputPath": "Standard Scaler Object"}], "image": "stevedev7/demo2-master:feature-scale-v2"}},
+          "inputs": [{"description": "Path to processed dataset", "name": "Data",
+          "type": "LocalPath"}], "name": "Feature scaling", "outputs": [{"name": "X
+          Train", "type": "LocalPath"}, {"name": "Y Train", "type": "LocalPath"},
+          {"name": "X Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"},
+          {"name": "Standard Scaler Object", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "85f0e1cfeaf7e8d1a2d93c788dbc4b8e8a95571442e10722ba15307142d2f6ef", "url":
+          "components/feature-engineering/feature-engineering.yml"}'}
+  - name: linear-regression-model-train
+    container:
+      args: []
+      command: [python, index.py, --x-train, /tmp/inputs/X_Train/data, --y-train,
+        /tmp/inputs/Y_Train/data, --model, /tmp/outputs/Linear_Regression_Model/data]
+      image: stevedev7/demo2-master:linear_regression_train
+    inputs:
+      artifacts:
+      - {name: feature-scaling-X-Train, path: /tmp/inputs/X_Train/data}
+      - {name: feature-scaling-Y-Train, path: /tmp/inputs/Y_Train/data}
+    outputs:
+      artifacts:
+      - {name: linear-regression-model-train-Linear-Regression-Model, path: /tmp/outputs/Linear_Regression_Model/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"command": ["python", "index.py", "--x-train", {"inputPath": "X Train"},
+          "--y-train", {"inputPath": "Y Train"}, "--model", {"outputPath": "Linear
+          Regression Model"}], "image": "stevedev7/demo2-master:linear_regression_train"}},
+          "inputs": [{"name": "X Train", "type": "LocalPath"}, {"name": "Y Train",
+          "type": "LocalPath"}], "name": "Linear Regression Model Train", "outputs":
+          [{"name": "Linear Regression Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "caa7719dc9e9fa3f975dea3ce3826abde1a5815edf9786a2e9d5fcc2ff8fc467", "url":
+          "components/linear-regression/linear-regression.yml"}'}
+  - name: linear-regression-test
+    container:
+      args: []
+      command: [python, index.py, --x-test, /tmp/inputs/X_Test/data, --y-test, /tmp/inputs/Y_Test/data,
+        --model, /tmp/inputs/Linear_Regression_Model/data, --accuracy, /tmp/outputs/Linear_Regression_Metrics/data]
+      image: stevedev7/demo2-master:linear-regression-test
+    inputs:
+      artifacts:
+      - {name: linear-regression-model-train-Linear-Regression-Model, path: /tmp/inputs/Linear_Regression_Model/data}
+      - {name: feature-scaling-X-Test, path: /tmp/inputs/X_Test/data}
+      - {name: feature-scaling-Y-Test, path: /tmp/inputs/Y_Test/data}
+    outputs:
+      artifacts:
+      - {name: linear-regression-test-Linear-Regression-Metrics, path: /tmp/outputs/Linear_Regression_Metrics/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"command": ["python", "index.py", "--x-test", {"inputPath": "X Test"},
+          "--y-test", {"inputPath": "Y Test"}, "--model", {"inputPath": "Linear Regression
+          Model"}, "--accuracy", {"outputPath": "Linear Regression Metrics"}], "image":
+          "stevedev7/demo2-master:linear-regression-test"}}, "inputs": [{"name": "X
+          Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"}, {"name":
+          "Linear Regression Model", "type": "LocalPath"}], "name": "Linear Regression
+          Test", "outputs": [{"name": "Linear Regression Metrics", "type": "LocalPath"}]}',
+        pipelines.kubeflow.org/component_ref: '{"digest": "7a8d429c37413830ca488d0b5b128803371d796d39ed1653dca5b921d3baafbf",
+          "url": "components/linear-regression-test/linear-regression-test.yml"}'}
+  - name: v-black-friday-v2
+    dag:
+      tasks:
+      - name: clean-data
+        template: clean-data
+        dependencies: [copy-data]
+        arguments:
+          artifacts:
+          - {name: copy-data-Dataset, from: '{{tasks.copy-data.outputs.artifacts.copy-data-Dataset}}'}
+      - {name: copy-data, template: copy-data}
+      - name: feature-scaling
+        template: feature-scaling
+        dependencies: [clean-data]
+        arguments:
+          artifacts:
+          - {name: clean-data-Data, from: '{{tasks.clean-data.outputs.artifacts.clean-data-Data}}'}
+      - name: linear-regression-model-train
+        template: linear-regression-model-train
+        dependencies: [feature-scaling]
+        arguments:
+          artifacts:
+          - {name: feature-scaling-X-Train, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-X-Train}}'}
+          - {name: feature-scaling-Y-Train, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-Y-Train}}'}
+      - name: linear-regression-test
+        template: linear-regression-test
+        dependencies: [feature-scaling, linear-regression-model-train]
+        arguments:
+          artifacts:
+          - {name: feature-scaling-X-Test, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-X-Test}}'}
+          - {name: feature-scaling-Y-Test, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-Y-Test}}'}
+          - {name: linear-regression-model-train-Linear-Regression-Model, from: '{{tasks.linear-regression-model-train.outputs.artifacts.linear-regression-model-train-Linear-Regression-Model}}'}
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
