@@ -6,21 +6,21 @@ inputs:
   }
 outputs:
   - {
-    name: XTrain, type: LocalPath
+    name: X Train, type: LocalPath
   }
   - {
-    name: YTrain, type: LocalPath
+    name: Y Train, type: LocalPath
   }
   - {
-    name: XTest, type: LocalPath
+    name: X Test, type: LocalPath
   }
   - {
-    name: YTest, type: LocalPath
+    name: Y Test, type: LocalPath
   }
 
 implementation:
   container:
-    image: stevedev7/black-friday:feature-engineering
+    image: stevedev7/demo2-master:feature-scale
     command: [
       python,
       index.py,
@@ -30,18 +30,18 @@ implementation:
       },
       --x-train,
       {
-        outputPath: XTrain
+        outputPath: X Train
       },
       --y-train,
       {
-        outputPath: YTrain
+        outputPath: Y Train
       },
       --x-test,
       {
-        outputPath: XTest
+        outputPath: X Test
       },
       --y-test,
       {
-        outputPath: YTest
+        outputPath: Y Test
       },
     ]

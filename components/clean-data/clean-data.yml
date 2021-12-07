@@ -12,10 +12,10 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/black-friday:clean-data
+    image: stevedev7/demo2-master:clean-data
     command: [
       python,
-      index.py
+      index.py,
       --dataset,
       {
         inputPath: Dataset

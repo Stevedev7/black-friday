@@ -11,7 +11,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/black-friday:copy-data
+    image: stevedev7/demo2-master:copy-data
     command: [
       python,
       index.py,
