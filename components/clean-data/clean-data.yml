@@ -5,6 +5,7 @@ inputs:
   - {
     name: Dataset, type: LocalPath, description: "Path to the dataset"
   }
+
 outputs:
   - {
     name: Data, type: LocalPath, description: "Path to processed dataset"
@@ -12,9 +13,13 @@ outputs:
   - {
     name: Column Transformer Object, type: LocalPath
   }
+  - {
+    name: Label Encoder Object, type: LocalPath
+  }
+
 implementation:
   container:
-    image: stevedev7/demo2-master:clean-data-v3
+    image: stevedev7/demo2-master:clean-data-v5
     command: [
       python,
       index.py,
@@ -29,5 +34,9 @@ implementation:
       --column-transformer,
       {
         outputPath: Column Transformer Object
+      },
+      --label-encoder,
+      {
+        outputPath: Label Encoder Object
       }
     ]

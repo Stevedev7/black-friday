@@ -1,0 +1,39 @@
+name: Linear Regression Predict
+
+inputs:
+  - {
+    name: Label Encoder Object, type: LocalPath
+  }
+  - {
+    name: Column Transformer Object, type: LocalPath
+  }
+  - {
+    name: Standard Scaler Object, type: LocalPath
+  }
+  - {
+    name: Linear Regression Model, type: LocalPath
+  }
+
+implementation:
+  container:
+    image: stevedev7/demo2-master:linear-regression-predict-03
+    command: [
+      python,
+      index.py,
+      --label-encoder,
+      {
+        inputPath: Label Encoder Object
+      },
+      --column-transformer,
+      {
+        inputPath: Column Transformer Object
+      },
+      --standard-scaler,
+      {
+        inputPath: Standard Scaler Object
+      },
+      --linear-regressor,
+      {
+        inputPath: Linear Regression Model
+      }
+    ]

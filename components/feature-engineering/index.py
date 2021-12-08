@@ -31,10 +31,10 @@ sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.transform(x_test)
 
-DataFrame(x_train).to_csv(args.x_train)
-DataFrame(y_train).to_csv(args.y_train)
-DataFrame(x_test).to_csv(args.x_test)
-DataFrame(y_test).to_csv(args.y_test)
+DataFrame(x_train).to_csv(args.x_train, index=False)
+DataFrame(y_train).to_csv(args.y_train, index=False)
+DataFrame(x_test).to_csv(args.x_test, index=False)
+DataFrame(y_test).to_csv(args.y_test, index=False)
 
 with open(args.standard_scaler, 'wb') as output_file:
     dump(sc, output_file)

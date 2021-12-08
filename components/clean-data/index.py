@@ -6,11 +6,14 @@ from argparse import ArgumentParser
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
 parser = ArgumentParser()
 parser.add_argument('--dataset', type=str)
 parser.add_argument('--data', type=str)
 parser.add_argument('--column-transformer', type=str)
+parser.add_argument('--label-encoder', type=str)
 args = parser.parse_args()
+
 Path(args.data).parent.mkdir(parents=True, exist_ok=True)
 
 df = pd.read_csv(args.dataset)
@@ -43,3 +46,8 @@ data.to_csv(path_or_buf=args.data, index=False)
 Path(args.column_transformer).parent.mkdir(parents=True, exist_ok=True)
 with open(args.column_transformer, 'wb') as output_file:
     dump(ct, output_file)
+
+
+Path(args.label_encoder).parent.mkdir(parents=True, exist_ok=True)
+with open(args.label_encoder, 'wb') as output_file:
+    dump(le, output_file)

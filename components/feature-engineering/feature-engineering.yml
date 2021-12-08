@@ -23,7 +23,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:feature-scale-v2
+    image: stevedev7/demo2-master:feature-scale-v3
     command: [
       python,
       index.py,

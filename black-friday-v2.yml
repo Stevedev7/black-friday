@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: v-black-friday-v2-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-07T21:28:56.149387',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-08T20:43:25.520661',
     pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
 spec:
@@ -12,8 +12,9 @@ spec:
     container:
       args: []
       command: [python, index.py, --dataset, /tmp/inputs/Dataset/data, --data, /tmp/outputs/Data/data,
-        --column-transformer, /tmp/outputs/Column_Transformer_Object/data]
-      image: stevedev7/demo2-master:clean-data-v3
+        --column-transformer, /tmp/outputs/Column_Transformer_Object/data, --label-encoder,
+        /tmp/outputs/Label_Encoder_Object/data]
+      image: stevedev7/demo2-master:clean-data-v5
     inputs:
       artifacts:
       - {name: copy-data-Dataset, path: /tmp/inputs/Dataset/data}
@@ -21,6 +22,7 @@ spec:
       artifacts:
       - {name: clean-data-Column-Transformer-Object, path: /tmp/outputs/Column_Transformer_Object/data}
       - {name: clean-data-Data, path: /tmp/outputs/Data/data}
+      - {name: clean-data-Label-Encoder-Object, path: /tmp/outputs/Label_Encoder_Object/data}
     metadata:
       labels:
         pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
@@ -30,13 +32,14 @@ spec:
           Nan values and generate dummy variables", "implementation": {"container":
           {"command": ["python", "index.py", "--dataset", {"inputPath": "Dataset"},
           "--data", {"outputPath": "Data"}, "--column-transformer", {"outputPath":
-          "Column Transformer Object"}], "image": "stevedev7/demo2-master:clean-data-v3"}},
-          "inputs": [{"description": "Path to the dataset", "name": "Dataset", "type":
-          "LocalPath"}], "name": "Clean Data", "outputs": [{"description": "Path to
-          processed dataset", "name": "Data", "type": "LocalPath"}, {"name": "Column
-          Transformer Object", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "e9ecbb7f56c08b0b5c9b78fd7080cda6d82a4912c465344f03fce6951cb167ff", "url":
-          "components/clean-data/clean-data.yml"}'}
+          "Column Transformer Object"}, "--label-encoder", {"outputPath": "Label Encoder
+          Object"}], "image": "stevedev7/demo2-master:clean-data-v5"}}, "inputs":
+          [{"description": "Path to the dataset", "name": "Dataset", "type": "LocalPath"}],
+          "name": "Clean Data", "outputs": [{"description": "Path to processed dataset",
+          "name": "Data", "type": "LocalPath"}, {"name": "Column Transformer Object",
+          "type": "LocalPath"}, {"name": "Label Encoder Object", "type": "LocalPath"}]}',
+        pipelines.kubeflow.org/component_ref: '{"digest": "88b9b4d42ac63bab500360d8a938abb6de057b4b4cf81ecaa5bc061361ecc250",
+          "url": "components/clean-data/clean-data.yml"}'}
   - name: copy-data
     container:
       args: []
@@ -67,7 +70,7 @@ spec:
       command: [python, index.py, --data, /tmp/inputs/Data/data, --x-train, /tmp/outputs/X_Train/data,
         --y-train, /tmp/outputs/Y_Train/data, --x-test, /tmp/outputs/X_Test/data,
         --y-test, /tmp/outputs/Y_Test/data, --standard-scaler, /tmp/outputs/Standard_Scaler_Object/data]
-      image: stevedev7/demo2-master:feature-scale-v2
+      image: stevedev7/demo2-master:feature-scale-v3
     inputs:
       artifacts:
       - {name: clean-data-Data, path: /tmp/inputs/Data/data}
@@ -87,13 +90,13 @@ spec:
           {"command": ["python", "index.py", "--data", {"inputPath": "Data"}, "--x-train",
           {"outputPath": "X Train"}, "--y-train", {"outputPath": "Y Train"}, "--x-test",
           {"outputPath": "X Test"}, "--y-test", {"outputPath": "Y Test"}, "--standard-scaler",
-          {"outputPath": "Standard Scaler Object"}], "image": "stevedev7/demo2-master:feature-scale-v2"}},
+          {"outputPath": "Standard Scaler Object"}], "image": "stevedev7/demo2-master:feature-scale-v3"}},
           "inputs": [{"description": "Path to processed dataset", "name": "Data",
           "type": "LocalPath"}], "name": "Feature scaling", "outputs": [{"name": "X
           Train", "type": "LocalPath"}, {"name": "Y Train", "type": "LocalPath"},
           {"name": "X Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"},
           {"name": "Standard Scaler Object", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "85f0e1cfeaf7e8d1a2d93c788dbc4b8e8a95571442e10722ba15307142d2f6ef", "url":
+          "dd8c19dfde02ae4355867ae11160aad33f0d0837d234dd19135e88c365568ac3", "url":
           "components/feature-engineering/feature-engineering.yml"}'}
   - name: linear-regression-model-train
     container:
@@ -121,7 +124,37 @@ spec:
           "type": "LocalPath"}], "name": "Linear Regression Model Train", "outputs":
           [{"name": "Linear Regression Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
           "caa7719dc9e9fa3f975dea3ce3826abde1a5815edf9786a2e9d5fcc2ff8fc467", "url":
-          "components/linear-regression/linear-regression.yml"}'}
+          "components/linear-regression/train/linear-regression.yml"}'}
+  - name: linear-regression-predict
+    container:
+      args: []
+      command: [python, index.py, --label-encoder, /tmp/inputs/Label_Encoder_Object/data,
+        --column-transformer, /tmp/inputs/Column_Transformer_Object/data, --standard-scaler,
+        /tmp/inputs/Standard_Scaler_Object/data, --linear-regressor, /tmp/inputs/Linear_Regression_Model/data]
+      image: stevedev7/demo2-master:linear-regression-predict-02
+    inputs:
+      artifacts:
+      - {name: clean-data-Column-Transformer-Object, path: /tmp/inputs/Column_Transformer_Object/data}
+      - {name: clean-data-Label-Encoder-Object, path: /tmp/inputs/Label_Encoder_Object/data}
+      - {name: linear-regression-model-train-Linear-Regression-Model, path: /tmp/inputs/Linear_Regression_Model/data}
+      - {name: feature-scaling-Standard-Scaler-Object, path: /tmp/inputs/Standard_Scaler_Object/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
+          {"command": ["python", "index.py", "--label-encoder", {"inputPath": "Label
+          Encoder Object"}, "--column-transformer", {"inputPath": "Column Transformer
+          Object"}, "--standard-scaler", {"inputPath": "Standard Scaler Object"},
+          "--linear-regressor", {"inputPath": "Linear Regression Model"}], "image":
+          "stevedev7/demo2-master:linear-regression-predict-02"}}, "inputs": [{"name":
+          "Label Encoder Object", "type": "LocalPath"}, {"name": "Column Transformer
+          Object", "type": "LocalPath"}, {"name": "Standard Scaler Object", "type":
+          "LocalPath"}, {"name": "Linear Regression Model", "type": "LocalPath"}],
+          "name": "Linear Regression Predict"}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "e867eda84fc024686aa2ebc765bbe5bb2bb4d7905621ce54a22daff704f4eb37", "url":
+          "components/linear-regression/predict/linear-regression-predict.yml"}'}
   - name: linear-regression-test
     container:
       args: []
@@ -150,7 +183,7 @@ spec:
           "Linear Regression Model", "type": "LocalPath"}], "name": "Linear Regression
           Test", "outputs": [{"name": "Linear Regression Metrics", "type": "LocalPath"}]}',
         pipelines.kubeflow.org/component_ref: '{"digest": "7a8d429c37413830ca488d0b5b128803371d796d39ed1653dca5b921d3baafbf",
-          "url": "components/linear-regression-test/linear-regression-test.yml"}'}
+          "url": "components/linear-regression/test/linear-regression-test.yml"}'}
   - name: v-black-friday-v2
     dag:
       tasks:
@@ -174,6 +207,15 @@ spec:
           artifacts:
           - {name: feature-scaling-X-Train, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-X-Train}}'}
           - {name: feature-scaling-Y-Train, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-Y-Train}}'}
+      - name: linear-regression-predict
+        template: linear-regression-predict
+        dependencies: [clean-data, feature-scaling, linear-regression-model-train]
+        arguments:
+          artifacts:
+          - {name: clean-data-Column-Transformer-Object, from: '{{tasks.clean-data.outputs.artifacts.clean-data-Column-Transformer-Object}}'}
+          - {name: clean-data-Label-Encoder-Object, from: '{{tasks.clean-data.outputs.artifacts.clean-data-Label-Encoder-Object}}'}
+          - {name: feature-scaling-Standard-Scaler-Object, from: '{{tasks.feature-scaling.outputs.artifacts.feature-scaling-Standard-Scaler-Object}}'}
+          - {name: linear-regression-model-train-Linear-Regression-Model, from: '{{tasks.linear-regression-model-train.outputs.artifacts.linear-regression-model-train-Linear-Regression-Model}}'}
       - name: linear-regression-test
         template: linear-regression-test
         dependencies: [feature-scaling, linear-regression-model-train]
