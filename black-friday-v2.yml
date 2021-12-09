@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: v-black-friday-v2-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-08T20:43:25.520661',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-09T11:22:00.776268',
     pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
 spec:
@@ -131,7 +131,7 @@ spec:
       command: [python, index.py, --label-encoder, /tmp/inputs/Label_Encoder_Object/data,
         --column-transformer, /tmp/inputs/Column_Transformer_Object/data, --standard-scaler,
         /tmp/inputs/Standard_Scaler_Object/data, --linear-regressor, /tmp/inputs/Linear_Regression_Model/data]
-      image: stevedev7/demo2-master:linear-regression-predict-02
+      image: stevedev7/demo2-master:linear-regression-predict-11
     inputs:
       artifacts:
       - {name: clean-data-Column-Transformer-Object, path: /tmp/inputs/Column_Transformer_Object/data}
@@ -148,12 +148,12 @@ spec:
           Encoder Object"}, "--column-transformer", {"inputPath": "Column Transformer
           Object"}, "--standard-scaler", {"inputPath": "Standard Scaler Object"},
           "--linear-regressor", {"inputPath": "Linear Regression Model"}], "image":
-          "stevedev7/demo2-master:linear-regression-predict-02"}}, "inputs": [{"name":
+          "stevedev7/demo2-master:linear-regression-predict-11"}}, "inputs": [{"name":
           "Label Encoder Object", "type": "LocalPath"}, {"name": "Column Transformer
           Object", "type": "LocalPath"}, {"name": "Standard Scaler Object", "type":
           "LocalPath"}, {"name": "Linear Regression Model", "type": "LocalPath"}],
           "name": "Linear Regression Predict"}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "e867eda84fc024686aa2ebc765bbe5bb2bb4d7905621ce54a22daff704f4eb37", "url":
+          "d88b693b47f5756bad91dbaec21c12491f57ce40d2e2ab1ba2942c5701e5457b", "url":
           "components/linear-regression/predict/linear-regression-predict.yml"}'}
   - name: linear-regression-test
     container:

@@ -16,7 +16,7 @@ inputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:linear-regression-predict-03
+    image: stevedev7/demo2-master:linear-regression-predict-11
     command: [
       python,
       index.py,
