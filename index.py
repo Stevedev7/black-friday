@@ -1,5 +1,5 @@
 from kfp import dsl
-from kfp.components import func_to_container_op, load_component_from_file
+from kfp.components import load_component_from_file, load_component_from_url
 from kfp.compiler import Compiler
 
 @dsl.pipeline(name='v=black-friday-v2')

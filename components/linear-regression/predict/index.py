@@ -1,3 +1,4 @@
+import joblib
 from json import dump
 from pickle import load
 from argparse import ArgumentParser
@@ -22,8 +23,11 @@ with open(args.column_transformer, 'rb') as out:
 with open(args.standard_scaler, 'rb') as out:
     sc = load(out)
 
-with open(args.linear_regressor, 'rb') as out:
-    linear_regressor = load(out)
+
+linear_regressor = joblib.load(args.model)
+
+# with open(args.linear_regressor, 'rb') as out:
+#     linear_regressor = load(out)
 
 input_data = [[1, '36-45', 1, 'B', '1', 1, 4, 14.0]]
 

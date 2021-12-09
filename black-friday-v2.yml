@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: v-black-friday-v2-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-09T11:22:00.776268',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-09T15:41:40.292461',
     pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
 spec:
@@ -160,7 +160,7 @@ spec:
       args: []
       command: [python, index.py, --x-test, /tmp/inputs/X_Test/data, --y-test, /tmp/inputs/Y_Test/data,
         --model, /tmp/inputs/Linear_Regression_Model/data, --accuracy, /tmp/outputs/Linear_Regression_Metrics/data]
-      image: stevedev7/demo2-master:linear-regression-test
+      image: stevedev7/demo2-master:linear-regression-test-01
     inputs:
       artifacts:
       - {name: linear-regression-model-train-Linear-Regression-Model, path: /tmp/inputs/Linear_Regression_Model/data}
@@ -178,11 +178,11 @@ spec:
           {"command": ["python", "index.py", "--x-test", {"inputPath": "X Test"},
           "--y-test", {"inputPath": "Y Test"}, "--model", {"inputPath": "Linear Regression
           Model"}, "--accuracy", {"outputPath": "Linear Regression Metrics"}], "image":
-          "stevedev7/demo2-master:linear-regression-test"}}, "inputs": [{"name": "X
-          Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"}, {"name":
-          "Linear Regression Model", "type": "LocalPath"}], "name": "Linear Regression
-          Test", "outputs": [{"name": "Linear Regression Metrics", "type": "LocalPath"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "7a8d429c37413830ca488d0b5b128803371d796d39ed1653dca5b921d3baafbf",
+          "stevedev7/demo2-master:linear-regression-test-01"}}, "inputs": [{"name":
+          "X Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"},
+          {"name": "Linear Regression Model", "type": "LocalPath"}], "name": "Linear
+          Regression Test", "outputs": [{"name": "Linear Regression Metrics", "type":
+          "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest": "852b8156ac1eccc391820cf1b0903d29cbe8c752a29082edcf113759cfa74761",
           "url": "components/linear-regression/test/linear-regression-test.yml"}'}
   - name: v-black-friday-v2
     dag:

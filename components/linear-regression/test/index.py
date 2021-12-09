@@ -1,4 +1,4 @@
-from pickle import load
+import joblib
 from pathlib import Path
 from pandas import read_csv
 from argparse import ArgumentParser
@@ -12,8 +12,10 @@ parser.add_argument('--y-test', type=str)
 
 args = parser.parse_args()
 
-with open(args.model, 'rb') as model_file:
-    linear_regressor = load(model_file)
+linear_regressor = joblib.load(args.model)
+
+# with open(args.model, 'rb') as model_file:
+#     linear_regressor = load(model_file)
 
 x_test = read_csv(args.x_test)
 y_test = read_csv(args.y_test)

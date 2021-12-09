@@ -18,7 +18,7 @@ outputs:
 
 implementation:
   container:
-    image: docker pull stevedev7/demo2-master:linear-regression-test
+    image: stevedev7/demo2-master:linear-regression-test-01
     command: [
       python,
       index.py,
