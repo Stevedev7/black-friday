@@ -15,7 +15,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:linear_regression_train
+    image: gcr.io/niveustraining/black-friday-v2/linear-regression/train:latest
     command: [
       python,
       index.py,

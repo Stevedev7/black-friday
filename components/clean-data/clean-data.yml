@@ -19,7 +19,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:clean-data-v5
+    image: gcr.io/niveustraining/black-friday-v2/clean-data:latest
     command: [
       python,
       index.py,

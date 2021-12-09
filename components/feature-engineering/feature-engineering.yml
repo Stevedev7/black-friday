@@ -23,7 +23,7 @@ outputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:feature-scale-v3
+    image: gcr.io/niveustraining/black-friday-v2/feature-scale:latest
     command: [
       python,
       index.py,

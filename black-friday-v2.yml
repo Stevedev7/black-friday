@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: v-black-friday-v2-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-09T11:22:00.776268',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2021-12-09T12:46:28.010606',
     pipelines.kubeflow.org/pipeline_spec: '{"name": "v=black-friday-v2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
 spec:
@@ -14,7 +14,7 @@ spec:
       command: [python, index.py, --dataset, /tmp/inputs/Dataset/data, --data, /tmp/outputs/Data/data,
         --column-transformer, /tmp/outputs/Column_Transformer_Object/data, --label-encoder,
         /tmp/outputs/Label_Encoder_Object/data]
-      image: stevedev7/demo2-master:clean-data-v5
+      image: gcr.io/niveustraining/black-friday-v2/clean-data:latest
     inputs:
       artifacts:
       - {name: copy-data-Dataset, path: /tmp/inputs/Dataset/data}
@@ -33,19 +33,20 @@ spec:
           {"command": ["python", "index.py", "--dataset", {"inputPath": "Dataset"},
           "--data", {"outputPath": "Data"}, "--column-transformer", {"outputPath":
           "Column Transformer Object"}, "--label-encoder", {"outputPath": "Label Encoder
-          Object"}], "image": "stevedev7/demo2-master:clean-data-v5"}}, "inputs":
-          [{"description": "Path to the dataset", "name": "Dataset", "type": "LocalPath"}],
-          "name": "Clean Data", "outputs": [{"description": "Path to processed dataset",
-          "name": "Data", "type": "LocalPath"}, {"name": "Column Transformer Object",
-          "type": "LocalPath"}, {"name": "Label Encoder Object", "type": "LocalPath"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "88b9b4d42ac63bab500360d8a938abb6de057b4b4cf81ecaa5bc061361ecc250",
-          "url": "components/clean-data/clean-data.yml"}'}
+          Object"}], "image": "gcr.io/niveustraining/black-friday-v2/clean-data:latest"}},
+          "inputs": [{"description": "Path to the dataset", "name": "Dataset", "type":
+          "LocalPath"}], "name": "Clean Data", "outputs": [{"description": "Path to
+          processed dataset", "name": "Data", "type": "LocalPath"}, {"name": "Column
+          Transformer Object", "type": "LocalPath"}, {"name": "Label Encoder Object",
+          "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "45e8e267fa826faab554386b6e35ca7a982fe0b4719505dc6c81eb18f4839421", "url":
+          "components/clean-data/clean-data.yml"}'}
   - name: copy-data
     container:
       args: []
       command: [python, index.py, --dataset, /tmp/outputs/Dataset/data, --sample,
         /tmp/outputs/Sample/data]
-      image: stevedev7/demo2-master:copy-data
+      image: gcr.io/niveustraining/black-friday-v2/copy-data:latest
     outputs:
       artifacts:
       - {name: copy-data-Dataset, path: /tmp/outputs/Dataset/data}
@@ -58,11 +59,11 @@ spec:
       annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Copy
           datasets", "implementation": {"container": {"command": ["python", "index.py",
           "--dataset", {"outputPath": "Dataset"}, "--sample", {"outputPath": "Sample"}],
-          "image": "stevedev7/demo2-master:copy-data"}}, "name": "Copy Data", "outputs":
-          [{"description": "Path where the dataset is stored", "name": "Dataset",
-          "type": "LocalPath"}, {"description": "Path where the sample data is stored",
-          "name": "Sample", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "8a2f504bf6b21b29bc24c75a72bb5e312233e93f58b1c60a5debb65f4f609bbf", "url":
+          "image": "gcr.io/niveustraining/black-friday-v2/copy-data:latest"}}, "name":
+          "Copy Data", "outputs": [{"description": "Path where the dataset is stored",
+          "name": "Dataset", "type": "LocalPath"}, {"description": "Path where the
+          sample data is stored", "name": "Sample", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "3e095fd77894972ab61225453a05a61fec46d6387b57941c2603aa7625c56753", "url":
           "components/copy-data/copy-data.yml"}'}
   - name: feature-scaling
     container:
@@ -70,7 +71,7 @@ spec:
       command: [python, index.py, --data, /tmp/inputs/Data/data, --x-train, /tmp/outputs/X_Train/data,
         --y-train, /tmp/outputs/Y_Train/data, --x-test, /tmp/outputs/X_Test/data,
         --y-test, /tmp/outputs/Y_Test/data, --standard-scaler, /tmp/outputs/Standard_Scaler_Object/data]
-      image: stevedev7/demo2-master:feature-scale-v3
+      image: gcr.io/niveustraining/black-friday-v2/feature-scale:latest
     inputs:
       artifacts:
       - {name: clean-data-Data, path: /tmp/inputs/Data/data}
@@ -90,20 +91,20 @@ spec:
           {"command": ["python", "index.py", "--data", {"inputPath": "Data"}, "--x-train",
           {"outputPath": "X Train"}, "--y-train", {"outputPath": "Y Train"}, "--x-test",
           {"outputPath": "X Test"}, "--y-test", {"outputPath": "Y Test"}, "--standard-scaler",
-          {"outputPath": "Standard Scaler Object"}], "image": "stevedev7/demo2-master:feature-scale-v3"}},
+          {"outputPath": "Standard Scaler Object"}], "image": "gcr.io/niveustraining/black-friday-v2/feature-scale:latest"}},
           "inputs": [{"description": "Path to processed dataset", "name": "Data",
           "type": "LocalPath"}], "name": "Feature scaling", "outputs": [{"name": "X
           Train", "type": "LocalPath"}, {"name": "Y Train", "type": "LocalPath"},
           {"name": "X Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"},
           {"name": "Standard Scaler Object", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "dd8c19dfde02ae4355867ae11160aad33f0d0837d234dd19135e88c365568ac3", "url":
+          "bd8b50b197f3f6ae56164ba4d4610d9b228c29a07993ecabc06150ca97e069ee", "url":
           "components/feature-engineering/feature-engineering.yml"}'}
   - name: linear-regression-model-train
     container:
       args: []
       command: [python, index.py, --x-train, /tmp/inputs/X_Train/data, --y-train,
         /tmp/inputs/Y_Train/data, --model, /tmp/outputs/Linear_Regression_Model/data]
-      image: stevedev7/demo2-master:linear_regression_train
+      image: gcr.io/niveustraining/black-friday-v2/linear-regression/train:latest
     inputs:
       artifacts:
       - {name: feature-scaling-X-Train, path: /tmp/inputs/X_Train/data}
@@ -119,11 +120,11 @@ spec:
       annotations: {pipelines.kubeflow.org/component_spec: '{"implementation": {"container":
           {"command": ["python", "index.py", "--x-train", {"inputPath": "X Train"},
           "--y-train", {"inputPath": "Y Train"}, "--model", {"outputPath": "Linear
-          Regression Model"}], "image": "stevedev7/demo2-master:linear_regression_train"}},
+          Regression Model"}], "image": "gcr.io/niveustraining/black-friday-v2/linear-regression/train:latest"}},
           "inputs": [{"name": "X Train", "type": "LocalPath"}, {"name": "Y Train",
           "type": "LocalPath"}], "name": "Linear Regression Model Train", "outputs":
           [{"name": "Linear Regression Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "caa7719dc9e9fa3f975dea3ce3826abde1a5815edf9786a2e9d5fcc2ff8fc467", "url":
+          "da9b146ef15d252b8eaa7ed1ea7692621668afd8e03f556a646b36ebe49555d2", "url":
           "components/linear-regression/train/linear-regression.yml"}'}
   - name: linear-regression-predict
     container:
@@ -131,7 +132,7 @@ spec:
       command: [python, index.py, --label-encoder, /tmp/inputs/Label_Encoder_Object/data,
         --column-transformer, /tmp/inputs/Column_Transformer_Object/data, --standard-scaler,
         /tmp/inputs/Standard_Scaler_Object/data, --linear-regressor, /tmp/inputs/Linear_Regression_Model/data]
-      image: stevedev7/demo2-master:linear-regression-predict-11
+      image: gcr.io/niveustraining/black-friday-v2/linear-regression/predict:latest
     inputs:
       artifacts:
       - {name: clean-data-Column-Transformer-Object, path: /tmp/inputs/Column_Transformer_Object/data}
@@ -148,19 +149,19 @@ spec:
           Encoder Object"}, "--column-transformer", {"inputPath": "Column Transformer
           Object"}, "--standard-scaler", {"inputPath": "Standard Scaler Object"},
           "--linear-regressor", {"inputPath": "Linear Regression Model"}], "image":
-          "stevedev7/demo2-master:linear-regression-predict-11"}}, "inputs": [{"name":
-          "Label Encoder Object", "type": "LocalPath"}, {"name": "Column Transformer
-          Object", "type": "LocalPath"}, {"name": "Standard Scaler Object", "type":
-          "LocalPath"}, {"name": "Linear Regression Model", "type": "LocalPath"}],
-          "name": "Linear Regression Predict"}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "d88b693b47f5756bad91dbaec21c12491f57ce40d2e2ab1ba2942c5701e5457b", "url":
+          "gcr.io/niveustraining/black-friday-v2/linear-regression/predict:latest"}},
+          "inputs": [{"name": "Label Encoder Object", "type": "LocalPath"}, {"name":
+          "Column Transformer Object", "type": "LocalPath"}, {"name": "Standard Scaler
+          Object", "type": "LocalPath"}, {"name": "Linear Regression Model", "type":
+          "LocalPath"}], "name": "Linear Regression Predict"}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "ded0bc50046b12b0167da91f56dfbe3223f5de4ef952d9aec7803ca2b182c65c", "url":
           "components/linear-regression/predict/linear-regression-predict.yml"}'}
   - name: linear-regression-test
     container:
       args: []
       command: [python, index.py, --x-test, /tmp/inputs/X_Test/data, --y-test, /tmp/inputs/Y_Test/data,
         --model, /tmp/inputs/Linear_Regression_Model/data, --accuracy, /tmp/outputs/Linear_Regression_Metrics/data]
-      image: stevedev7/demo2-master:linear-regression-test
+      image: gcr.io/niveustraining/black-friday-v2/linear-regression/test:latest
     inputs:
       artifacts:
       - {name: linear-regression-model-train-Linear-Regression-Model, path: /tmp/inputs/Linear_Regression_Model/data}
@@ -178,12 +179,13 @@ spec:
           {"command": ["python", "index.py", "--x-test", {"inputPath": "X Test"},
           "--y-test", {"inputPath": "Y Test"}, "--model", {"inputPath": "Linear Regression
           Model"}, "--accuracy", {"outputPath": "Linear Regression Metrics"}], "image":
-          "stevedev7/demo2-master:linear-regression-test"}}, "inputs": [{"name": "X
-          Test", "type": "LocalPath"}, {"name": "Y Test", "type": "LocalPath"}, {"name":
-          "Linear Regression Model", "type": "LocalPath"}], "name": "Linear Regression
-          Test", "outputs": [{"name": "Linear Regression Metrics", "type": "LocalPath"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "7a8d429c37413830ca488d0b5b128803371d796d39ed1653dca5b921d3baafbf",
-          "url": "components/linear-regression/test/linear-regression-test.yml"}'}
+          "gcr.io/niveustraining/black-friday-v2/linear-regression/test:latest"}},
+          "inputs": [{"name": "X Test", "type": "LocalPath"}, {"name": "Y Test", "type":
+          "LocalPath"}, {"name": "Linear Regression Model", "type": "LocalPath"}],
+          "name": "Linear Regression Test", "outputs": [{"name": "Linear Regression
+          Metrics", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "9573a83789c940a175801769d189fb9445320befa17263af9b51db2ddce4b67e", "url":
+          "components/linear-regression/test/linear-regression-test.yml"}'}
   - name: v-black-friday-v2
     dag:
       tasks:

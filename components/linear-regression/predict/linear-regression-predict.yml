@@ -16,7 +16,7 @@ inputs:
 
 implementation:
   container:
-    image: stevedev7/demo2-master:linear-regression-predict-11
+    image: gcr.io/niveustraining/black-friday-v2/linear-regression/predict:latest
     command: [
       python,
       index.py,
